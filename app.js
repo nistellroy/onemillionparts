@@ -13,8 +13,6 @@ const {MongoClient} = require('mongodb');
 
 let arrayStorage = [];
 let arrayTime = [];
-let finishArray = [];
-let arStorage = [];
 
 const database = new MongoClient("mongodb+srv://users:nistell16@cluster0.h5lezlv.mongodb.net/?retryWrites=true&w=majority");
 
@@ -37,7 +35,7 @@ app.post("/index", (req, send) => {
 
         const response = await axios({
             method: "GET",
-            url: `https://onemillionparts.com/controller/buying/read.php?_dc=1667349325477&StorageSearchingCase=1&Storage=${req.body.Count}&page=1&start=0&limit=50`,
+            url: `https://onemillionparts.com/controller/buying/read.php?_dc=1667349325477&StorageSearchingCase=1&Storage=mc${req.body.Count}&page=1&start=0&limit=50`,
             headers: {
                 'Cookie': `${getHeaders}`
             },
@@ -47,7 +45,6 @@ app.post("/index", (req, send) => {
         const date = new Date();
         arrayStorage.push(response.data.data[0].Storage.green + '\t' + date.toLocaleTimeString().gray + "\t" + response.data.data[0].Title.split(" ")[0].toString().red);
         arrayTime.push(date.toLocaleTimeString());
-        arStorage.push(response.data.data[0].Storage + " "  + response.data.data[0].Title.split(" ")[0].toString());
         console.log("===================Amount===================");
         if(arrayTime.length > 1) {
             const storage = arrayTime.filter((str, index) => {
@@ -110,21 +107,25 @@ app.post("/index", (req, send) => {
 go();
 });
 
-app.post("/", async (client, server) => {
+app.post("/save", async (client, server) => {
     const date = await new Date();
     const db = await database.db().collection("onemillionparts");
-    await db.insertOne({name: "Sharof", date: date.toLocaleDateString().replace(/\//g, "."), storage: arStorage, amount: arStorage.length});
-    });
+    await db.insertOne({name: client.body.name, date: date.toLocaleDateString().replace(/\//g, "."), storage: client.body.model, amount: client.body.model.length});
+});
+
 
 app.get("/amount", async (req, res) => {
         database.connect();
+        console.log("Connected");
         const db = await database.db().collection("onemillionparts");
-        await db.find().toArray((err, data) => {
-        res.send(data);
+        const find = await db.find().toArray((err, data) => {
+            res.send(data);
+        });
     });
-});
 
 app.get("/amount/:dateTime", async (req, res) => {
+    await database.connect();
+    
     const db = await database.db().collection("onemillionparts");
     const result = await db.findOne({date: req.params.dateTime});
     res.send(result);
