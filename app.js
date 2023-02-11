@@ -89,19 +89,14 @@ app.post("/index", (req, send) => {
         const newnewobj = newobj.filter(index => {
             return index;
         });
-
-        //this is currency usd cad format
-        axios("https://currate.ru/api/?get=rates&pairs=USDCAD,CADUSD&key=d5ebeb3e6cc4744e3697c11801bdfb39")
-            .then(currence => {
-            send.json({
-                comment: newnewobj,
-                array: arr,
-                title: response.data.data[0].Title,
-                storage: response.data.data[0].Storage,
-                img: response.data.data[0].PicURL1,
-                amount: response.data.data[0].AmountPaid,
-                sum: currence.data.data.USDCAD
-            });
+        // this is currency usd cad format
+        send.json({
+            comment: newnewobj,
+            array: arr,
+            title: response.data.data[0].Title,
+            storage: response.data.data[0].Storage,
+            img: response.data.data[0].PicURL1,
+            amount: response.data.data[0].AmountPaid
         });
     }
 go();
@@ -110,7 +105,7 @@ go();
 app.post("/save", async (client, server) => {
     const date = await new Date();
     const db = await database.db().collection("onemillionparts");
-    await db.insertOne({name: client.body.name, date: date.toLocaleDateString().replace(/\//g, "."), storage: client.body.model, amount: client.body.model.length});
+    await db.insertOne({name: client.body.name, date: date.toLocaleDateString().replace(/\//g, "."), storage: client.body.model, image: client.body.image, amount: client.body.model.length});
 });
 
 

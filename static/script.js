@@ -1,6 +1,7 @@
 //block html
 const parent = document.querySelector(".content__block");
 let models = [];
+let images = [];
 
 const count = prompt("Model noutbook");
 console.log(count);
@@ -8,6 +9,7 @@ console.log(count);
 const server = async function() {
   if(localStorage.length > 0) {
   models = JSON.parse(localStorage.getItem("model"));
+  images = JSON.parse(localStorage.getItem("image"));
 }
   const res = await fetch("/index", {
     headers: {
@@ -26,8 +28,9 @@ const server = async function() {
     document.querySelector(".info").innerHTML = data.title;
     document.querySelector(".picurl").src = data.img;
     models.push(data.storage + " " + data.title.split(" ")[0].toString());
+    images.push(data.img);
     localStorage.setItem("model", JSON.stringify(models));
-    console.log( JSON.parse(localStorage.getItem("model")));
+    localStorage.setItem("image", JSON.stringify(images));
 
     for(let i = 0; i < data.comment.length; i++) {
         const div = document.createElement('div');
@@ -55,7 +58,8 @@ document.getElementById("database").addEventListener("click", async function() {
     },
     body: JSON.stringify({
       name: document.querySelector(".text").value,
-      model: JSON.parse(localStorage.getItem("model"))
+      model: JSON.parse(localStorage.getItem("model")),
+      image: JSON.parse(localStorage.getItem("image")),
     })
   });
   const data = await response.json();
@@ -66,3 +70,16 @@ document.getElementById("database").addEventListener("click", async function() {
   document.getElementById("clear").addEventListener("click", async () => {
     localStorage.clear();
     });
+
+  // const response = new Promise((resolve, reject) => {
+  //   fetch("/amount")
+  //   .then(data => {
+  //     return resolve(data.json());
+  //   });
+  // });
+
+  // response.then(res => {
+  //   res.forEach(element => {
+  //     console.log(element.name, element.amount, element.storage);
+  //   });
+  // });
